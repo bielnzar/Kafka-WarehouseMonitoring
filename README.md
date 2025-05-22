@@ -437,9 +437,9 @@ Sistem monitoring gudang ini berhasil dibuat dan dijalankan dengan:
 
 ## Dokumentasi
 
-[image1](https://github.com/bielnzar/Kafka-WarehouseMonitoring/blob/main/images/1.png)
-[image2](https://github.com/bielnzar/Kafka-WarehouseMonitoring/blob/main/images/2.png)
-[image3](https://github.com/bielnzar/Kafka-WarehouseMonitoring/blob/main/images/3.png)
-[image4](https://github.com/bielnzar/Kafka-WarehouseMonitoring/blob/main/images/4.png)
-[image5](https://github.com/bielnzar/Kafka-WarehouseMonitoring/blob/main/images/5.png)
-[image6](https://github.com/bielnzar/Kafka-WarehouseMonitoring/blob/main/images/6.png)
+![image1](https://github.com/bielnzar/Kafka-WarehouseMonitoring/blob/main/images/1.png)
+![image2](https://github.com/bielnzar/Kafka-WarehouseMonitoring/blob/main/images/2.png)
+![image3](https://github.com/bielnzar/Kafka-WarehouseMonitoring/blob/main/images/3.png)
+![image4](https://github.com/bielnzar/Kafka-WarehouseMonitoring/blob/main/images/4.png)
+![image5](https://github.com/bielnzar/Kafka-WarehouseMonitoring/blob/main/images/5.png)
+![image6](https://github.com/bielnzar/Kafka-WarehouseMonitoring/blob/main/images/6.png)
