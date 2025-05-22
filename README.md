@@ -12,7 +12,7 @@ Sebelum memulai, pastikan memiliki:
 - **winutils.exe** untuk Hadoop di Windows.
 - Koneksi internet untuk mengunduh dependensi.
 
-## Langkah 1: Setup Lingkungan
+## 1 : Setup Environment
 
 ### 1.1 Instalasi Dependensi Python
 
@@ -71,7 +71,7 @@ PySpark membutuhkan Java 8 atau 11.
    java -version
    ```
 
-## Langkah 2: Konfigurasi Docker untuk Kafka
+## 2 : Konfigurasi Docker untuk Kafka
 
 Kafka digunakan untuk mengelola stream data suhu dan kelembapan. Kami akan menggunakan Docker untuk menjalankan Kafka, Zookeeper, dan Kafka UI.
 
@@ -138,13 +138,13 @@ Kafka digunakan untuk mengelola stream data suhu dan kelembapan. Kami akan mengg
      Pastikan `zookeeper`, `kafka`, dan `kafka-ui` dalam status "Up".
    - Buka `http://localhost:8080` untuk mengakses Kafka UI dan pastikan cluster terdeteksi.
 
-## Langkah 3: Buat Kafka Producer
+## 3 : Buat Kafka Producer
 
 Kami membuat dua producer untuk mengirim data suhu dan kelembapan ke topik Kafka.
 
 ### 3.1 Producer Suhu
 
-1. **Buat File `producer_suhu.py`**:
+1. **Buat File `producer-suhu.py`**:
 
    - Simpan kode berikut:
 
@@ -179,7 +179,7 @@ Kami membuat dua producer untuk mengirim data suhu dan kelembapan ke topik Kafka
 
 ### 3.2 Producer Kelembapan
 
-1. **Buat File `producer_kelembapan.py`**:
+1. **Buat File `producer-kelembapan.py`**:
 
    - Simpan kode berikut:
 
@@ -215,8 +215,8 @@ Kami membuat dua producer untuk mengirim data suhu dan kelembapan ke topik Kafka
 2. **Jalankan Producer**:
    - Buka dua terminal terpisah dan jalankan:
      ```bash
-     python producer_suhu.py
-     python producer_kelembapan.py
+     python producer-suhu.py
+     python producer-kelembapan.py
      ```
    - Pastikan output menunjukkan pengiriman berhasil, misalnya:
      ```
@@ -224,11 +224,11 @@ Kami membuat dua producer untuk mengirim data suhu dan kelembapan ke topik Kafka
      Message delivered to sensor-kelembapan-gudang [0]
      ```
 
-## Langkah 4: Buat PySpark Consumer
+## 4 : Buat PySpark Consumer
 
 Consumer akan membaca stream dari Kafka, menyaring data, dan menghasilkan peringatan.
 
-1. **Buat File `consumer_pyspark.py`**:
+1. **Buat File `consumer-pyspark.py`**:
 
    - Simpan kode berikut:
 
@@ -342,10 +342,10 @@ Consumer akan membaca stream dari Kafka, menyaring data, dan menghasilkan pering
 2. **Jalankan Consumer**:
    - Buka terminal baru dan jalankan:
      ```bash
-     python consumer_pyspark.py
+     python consumer-pyspark.py
      ```
 
-## Langkah 5: Validasi Sistem
+## 5 : Validasi Sistem
 
 Untuk memastikan sistem berfungsi sesuai tugas, lakukan validasi berikut:
 
@@ -356,7 +356,6 @@ Untuk memastikan sistem berfungsi sesuai tugas, lakukan validasi berikut:
      docker-compose ps
      ```
    - Buka `http://localhost:8080` untuk memastikan Kafka UI menampilkan cluster dan topik (`sensor-suhu-gudang`, `sensor-kelembapan-gudang`).
-   - **Dokumentasi**: Ambil screenshot output `docker-compose ps` dan halaman Kafka UI.
 
 2. **Cek Producer**:
 
@@ -366,65 +365,17 @@ Untuk memastikan sistem berfungsi sesuai tugas, lakukan validasi berikut:
      Message delivered to sensor-kelembapan-gudang [0]
      ```
    - Di Kafka UI, periksa pesan di topik untuk memastikan format data benar (misalnya, `{"gudang_id": "G1", "suhu": 82}`).
-   - **Dokumentasi**: Ambil screenshot output producer dan pesan di Kafka UI.
 
 3. **Cek Consumer**:
 
-   - Pastikan consumer menampilkan peringatan seperti:
-
-     ```
-     [Peringatan Suhu Tinggi]
-     +----------+----+--------------------+
-     |gudang_id|suhu|status             |
-     +----------+----+--------------------+
-     |G2       |85.0|[Peringatan Suhu Tinggi]|
-     +----------+----+--------------------+
-
-     [Peringatan Kelembapan Tinggi]
-     +----------+----------+--------------------+
-     |gudang_id|kelembapan|status             |
-     +----------+----------+--------------------+
-     |G3       |74.0     |[Peringatan Kelembapan Tinggi]|
-     +----------+----------+--------------------+
-
-     [PERINGATAN KRITIS]
-     +----------+----+----------+--------------------+---------------------------------------------+
-     |gudang_id|suhu|kelembapan|timestamp           |status                                       |
-     +----------+----+----------+--------------------+---------------------------------------------+
-     |G1       |84.0|73.0     |2025-05-22 23:45:12|[PERINGATAN KRITIS] Status: Bahaya tinggi!...|
-     +----------+----+----------+--------------------+---------------------------------------------+
-     ```
-
-   - **Dokumentasi**: Ambil screenshot output consumer.
+   - Pastikan consumer menampilkan peringatan.
 
 4. **Validasi Persyaratan Tugas**:
    - Topik Kafka dibuat otomatis (`KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"`).
    - Producer mengirim data setiap detik untuk G1, G2, G3 dalam format yang benar.
    - Consumer menyaring suhu >80°C dan kelembapan >70%, serta menggabungkan stream untuk kondisi kritis dalam jendela waktu 10 detik.
-   - **Dokumentasi**: Catat bahwa semua persyaratan terpenuhi.
 
-## Langkah 6: Dokumentasi untuk Pengumpulan
-
-Buat laporan untuk menunjukkan bahwa sistem berfungsi. Berikut adalah contoh isi laporan:
-
-1. **Setup Lingkungan**:
-
-   - Screenshot pengaturan variabel lingkungan (`HADOOP_HOME`, `JAVA_HOME`).
-   - Screenshot output `docker-compose ps` menunjukkan kontainer aktif.
-
-2. **Producer**:
-
-   - Screenshot output `producer_suhu.py` dan `producer_kelembapan.py`.
-   - Screenshot Kafka UI menampilkan topik dan pesan.
-
-3. **Consumer**:
-
-   - Screenshot output `consumer_pyspark.py` dengan peringatan suhu, kelembapan, dan kondisi kritis.
-
-4. **Kesimpulan**:
-   - Tulis ringkasan bahwa sistem memenuhi semua kebutuhan tugas, termasuk pembuatan topik, pengiriman data, dan pemrosesan stream.
-
-## Langkah 7: Penyelesaian Masalah (Troubleshooting)
+## 6: Troubleshooting
 
 Jika terjadi masalah, coba langkah berikut:
 
@@ -465,7 +416,7 @@ Jika terjadi masalah, coba langkah berikut:
     netsh advfirewall firewall add rule name="Kafka 29092" dir=in action=allow protocol=TCP localport=29092
     ```
 
-## Kesimpulan
+## 7 : Kesimpulan
 
 Sistem monitoring gudang ini berhasil dibuat dan dijalankan dengan:
 
