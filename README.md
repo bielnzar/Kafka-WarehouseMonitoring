@@ -1,3 +1,13 @@
+# Problem Based Learning : Apache Kafka
+
+Mata Kuliah: Big Data dan Data Lakehouse (A)
+
+Dosen Pengampu: Fuad Dary Rosyadi, S.Kom., M.Kom.
+
+|        Nama         |    NRP     |
+| :-----------------: | :--------: |
+| Nabiel Nizar Anwari | 5027231087 |
+
 # Sistem Monitoring Gudang
 
 Penjelaskan langkah-langkah pembuatan dan penggunaan sistem monitoring gudang menggunakan Apache Kafka dan PySpark untuk memantau suhu dan kelembapan di tiga gudang (G1, G2, G3). Sistem ini menghasilkan peringatan untuk suhu >80°C, kelembapan >70%, dan kondisi kritis (suhu >80°C dan kelembapan >70% secara bersamaan).
