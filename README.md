@@ -1,9 +1,11 @@
-# Panduan Pembuatan dan Penggunaan Sistem Monitoring Gudang
+# Sistem Monitoring Gudang
 
-Dokumen ini menjelaskan langkah-langkah pembuatan dan penggunaan sistem monitoring gudang menggunakan Apache Kafka dan PySpark untuk memantau suhu dan kelembapan di tiga gudang (G1, G2, G3). Sistem ini menghasilkan peringatan untuk suhu >80°C, kelembapan >70%, dan kondisi kritis (suhu >80°C dan kelembapan >70% secara bersamaan). Berikut adalah panduan langkah demi langkah.
+Penjelaskan langkah-langkah pembuatan dan penggunaan sistem monitoring gudang menggunakan Apache Kafka dan PySpark untuk memantau suhu dan kelembapan di tiga gudang (G1, G2, G3). Sistem ini menghasilkan peringatan untuk suhu >80°C, kelembapan >70%, dan kondisi kritis (suhu >80°C dan kelembapan >70% secara bersamaan).
 
-## Prasyarat
-Sebelum memulai, pastikan Anda memiliki:
+## Prerequest
+
+Sebelum memulai, pastikan memiliki:
+
 - **Docker Desktop** terinstal untuk menjalankan Kafka, Zookeeper, dan Kafka UI.
 - **Python 3.11** (direkomendasikan, karena Python 3.13 mungkin bermasalah dengan Spark 3.5.0).
 - **Java 8 atau 11** untuk PySpark.
@@ -11,7 +13,9 @@ Sebelum memulai, pastikan Anda memiliki:
 - Koneksi internet untuk mengunduh dependensi.
 
 ## Langkah 1: Setup Lingkungan
+
 ### 1.1 Instalasi Dependensi Python
+
 1. Instal library Python yang dibutuhkan:
    ```bash
    pip install confluent-kafka pyspark
@@ -24,7 +28,9 @@ Sebelum memulai, pastikan Anda memiliki:
    Pastikan PySpark versi 3.5.0 dan `confluent-kafka` versi terbaru (misalnya, 2.5.0).
 
 ### 1.2 Setup Hadoop untuk Windows
+
 PySpark membutuhkan `winutils.exe` untuk berjalan di Windows.
+
 1. Unduh `winutils.exe` untuk Hadoop 3.3.0 dari [repositori GitHub winutils](https://github.com/cdarlint/winutils) (file di `hadoop-3.3.0/bin/winutils.exe`).
 2. Buat folder `C:\hadoop\bin` dan salin `winutils.exe` ke dalamnya.
 3. Atur variabel lingkungan:
@@ -37,7 +43,7 @@ PySpark membutuhkan `winutils.exe` untuk berjalan di Windows.
    ```bash
    winutils.exe
    ```
-   Anda akan melihat informasi penggunaan jika berhasil.
+   Akan terlihat informasi penggunaan jika berhasil.
 5. Berikan izin ke direktori sementara:
    ```bash
    mkdir \tmp\hive
@@ -45,7 +51,9 @@ PySpark membutuhkan `winutils.exe` untuk berjalan di Windows.
    ```
 
 ### 1.3 Setup Java
+
 PySpark membutuhkan Java 8 atau 11.
+
 1. Cek versi Java:
    ```bash
    java -version
@@ -64,10 +72,13 @@ PySpark membutuhkan Java 8 atau 11.
    ```
 
 ## Langkah 2: Konfigurasi Docker untuk Kafka
+
 Kafka digunakan untuk mengelola stream data suhu dan kelembapan. Kami akan menggunakan Docker untuk menjalankan Kafka, Zookeeper, dan Kafka UI.
 
 1. **Buat File `docker-compose.yml`**:
+
    - Simpan kode berikut di folder proyek (misalnya, `D:\AiTieS\KULIAH\Semester_4\Big Data\Tugas\5\Kafka-WarehouseMonitoring`):
+
      ```yaml
      version: "3"
 
@@ -113,6 +124,7 @@ Kafka digunakan untuk mengelola stream data suhu dan kelembapan. Kami akan mengg
            KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
            KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
      ```
+
 2. **Jalankan Docker Compose**:
    - Di terminal, navigasi ke folder proyek dan jalankan:
      ```bash
@@ -127,11 +139,15 @@ Kafka digunakan untuk mengelola stream data suhu dan kelembapan. Kami akan mengg
    - Buka `http://localhost:8080` untuk mengakses Kafka UI dan pastikan cluster terdeteksi.
 
 ## Langkah 3: Buat Kafka Producer
+
 Kami membuat dua producer untuk mengirim data suhu dan kelembapan ke topik Kafka.
 
 ### 3.1 Producer Suhu
+
 1. **Buat File `producer_suhu.py`**:
+
    - Simpan kode berikut:
+
      ```python
      from confluent_kafka import Producer
      import json
@@ -162,8 +178,11 @@ Kami membuat dua producer untuk mengirim data suhu dan kelembapan ke topik Kafka
      ```
 
 ### 3.2 Producer Kelembapan
+
 1. **Buat File `producer_kelembapan.py`**:
+
    - Simpan kode berikut:
+
      ```python
      from confluent_kafka import Producer
      import json
@@ -206,10 +225,13 @@ Kami membuat dua producer untuk mengirim data suhu dan kelembapan ke topik Kafka
      ```
 
 ## Langkah 4: Buat PySpark Consumer
+
 Consumer akan membaca stream dari Kafka, menyaring data, dan menghasilkan peringatan.
 
 1. **Buat File `consumer_pyspark.py`**:
+
    - Simpan kode berikut:
+
      ```python
      from pyspark.sql import SparkSession
      from pyspark.sql.functions import col, from_json, current_timestamp, lit
@@ -324,9 +346,11 @@ Consumer akan membaca stream dari Kafka, menyaring data, dan menghasilkan pering
      ```
 
 ## Langkah 5: Validasi Sistem
+
 Untuk memastikan sistem berfungsi sesuai tugas, lakukan validasi berikut:
 
 1. **Cek Docker dan Kafka**:
+
    - Verifikasi kontainer aktif:
      ```bash
      docker-compose ps
@@ -335,6 +359,7 @@ Untuk memastikan sistem berfungsi sesuai tugas, lakukan validasi berikut:
    - **Dokumentasi**: Ambil screenshot output `docker-compose ps` dan halaman Kafka UI.
 
 2. **Cek Producer**:
+
    - Pastikan producer mengirim data:
      ```
      Message delivered to sensor-suhu-gudang [0]
@@ -344,7 +369,9 @@ Untuk memastikan sistem berfungsi sesuai tugas, lakukan validasi berikut:
    - **Dokumentasi**: Ambil screenshot output producer dan pesan di Kafka UI.
 
 3. **Cek Consumer**:
+
    - Pastikan consumer menampilkan peringatan seperti:
+
      ```
      [Peringatan Suhu Tinggi]
      +----------+----+--------------------+
@@ -367,6 +394,7 @@ Untuk memastikan sistem berfungsi sesuai tugas, lakukan validasi berikut:
      |G1       |84.0|73.0     |2025-05-22 23:45:12|[PERINGATAN KRITIS] Status: Bahaya tinggi!...|
      +----------+----+----------+--------------------+---------------------------------------------+
      ```
+
    - **Dokumentasi**: Ambil screenshot output consumer.
 
 4. **Validasi Persyaratan Tugas**:
@@ -376,24 +404,30 @@ Untuk memastikan sistem berfungsi sesuai tugas, lakukan validasi berikut:
    - **Dokumentasi**: Catat bahwa semua persyaratan terpenuhi.
 
 ## Langkah 6: Dokumentasi untuk Pengumpulan
-Buat laporan untuk menunjukkan bahwa sistem Anda berfungsi. Berikut adalah contoh isi laporan:
+
+Buat laporan untuk menunjukkan bahwa sistem berfungsi. Berikut adalah contoh isi laporan:
 
 1. **Setup Lingkungan**:
+
    - Screenshot pengaturan variabel lingkungan (`HADOOP_HOME`, `JAVA_HOME`).
    - Screenshot output `docker-compose ps` menunjukkan kontainer aktif.
 
 2. **Producer**:
+
    - Screenshot output `producer_suhu.py` dan `producer_kelembapan.py`.
    - Screenshot Kafka UI menampilkan topik dan pesan.
 
 3. **Consumer**:
+
    - Screenshot output `consumer_pyspark.py` dengan peringatan suhu, kelembapan, dan kondisi kritis.
 
 4. **Kesimpulan**:
    - Tulis ringkasan bahwa sistem memenuhi semua kebutuhan tugas, termasuk pembuatan topik, pengiriman data, dan pemrosesan stream.
 
 ## Langkah 7: Penyelesaian Masalah (Troubleshooting)
+
 Jika terjadi masalah, coba langkah berikut:
+
 - **Error HADOOP_HOME**:
   - Pastikan `winutils.exe` ada di `C:\hadoop\bin`.
   - Verifikasi variabel `HADOOP_HOME` dengan:
@@ -415,13 +449,13 @@ Jika terjadi masalah, coba langkah berikut:
       deploy:
         resources:
           limits:
-            cpus: '0.5'
+            cpus: "0.5"
             memory: 512M
     kafka:
       deploy:
         resources:
           limits:
-            cpus: '1.0'
+            cpus: "1.0"
             memory: 1G
     ```
 - **Koneksi Kafka Gagal**:
@@ -432,8 +466,19 @@ Jika terjadi masalah, coba langkah berikut:
     ```
 
 ## Kesimpulan
+
 Sistem monitoring gudang ini berhasil dibuat dan dijalankan dengan:
+
 - **Docker** untuk menjalankan Kafka, Zookeeper, dan Kafka UI.
 - **Kafka Producer** untuk mengirim data suhu dan kelembapan.
 - **PySpark Consumer** untuk memproses stream dan menghasilkan peringatan.
-Semua persyaratan tugas terpenuhi, termasuk filtering data dan pembuatan peringatan kritis. Dokumentasi berupa screenshot dan log disertakan untuk validasi.
+  Semua persyaratan tugas terpenuhi, termasuk filtering data dan pembuatan peringatan kritis. Dokumentasi berupa screenshot dan log disertakan untuk validasi.
+
+## Dokumentasi
+
+[image1](https://github.com/bielnzar/Kafka-WarehouseMonitoring/blob/main/images/1.png)
+[image2](https://github.com/bielnzar/Kafka-WarehouseMonitoring/blob/main/images/2.png)
+[image3](https://github.com/bielnzar/Kafka-WarehouseMonitoring/blob/main/images/3.png)
+[image4](https://github.com/bielnzar/Kafka-WarehouseMonitoring/blob/main/images/4.png)
+[image5](https://github.com/bielnzar/Kafka-WarehouseMonitoring/blob/main/images/5.png)
+[image6](https://github.com/bielnzar/Kafka-WarehouseMonitoring/blob/main/images/6.png)
